@@ -44,8 +44,7 @@ export class GetRecipesArgs {
 
 @ArgsType()
 export class GetRecipeArg {
-  @Field(() => Int)
-  @Field({ nullable: false })
+  @Field(() => Int, { nullable: false })
   id: number;
 }
 

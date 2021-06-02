@@ -5,45 +5,29 @@ import {
   GetRecipesArgs,
   Recipe,
 } from "../models/Recipe";
+import { Service } from "typedi";
+import { RecipeService } from "../services/RecipeService";
 
+@Service()
 @Resolver(Recipe)
 export class RecipeResolver {
-  private recipesCollection: Recipe[] = [];
+  constructor(private readonly recipeService: RecipeService) {}
 
   @Query(() => [Recipe])
   async recipes(@Args() { title, startIndex, endIndex }: GetRecipesArgs) {
-    // sample implementation
-    let recipes = this.recipesCollection;
-    if (title) {
-      recipes = recipes.filter((recipe) => recipe.title === title);
-    }
-    return recipes.slice(startIndex, endIndex);
+    return this.recipeService.getAll(title, startIndex, endIndex);
   }
 
   @Query(() => Recipe || undefined)
   async recipe(@Args() { id }: GetRecipeArg) {
-    // sample implementation
-    let recipe = this.recipesCollection.find((a) => a.id == id);
-
-    if (!recipe) throw new Error("Recipe not found!");
-
-    return recipe;
+    return this.recipeService.getOne(id);
   }
 
-  @Mutation()
-  addRecipe(
+  @Mutation(() => Recipe)
+  async addRecipe(
     @Arg("data") newRecipeData: AddRecipeInput,
     @Ctx() ctx: any
-  ): Recipe {
-    // sample implementation
-    const recipe = new Recipe();
-
-    recipe.id = Math.floor(Math.random() * (10000 - 1) + 1);
-    recipe.title = newRecipeData.title;
-    recipe.description = newRecipeData.description;
-    recipe.creationDate = new Date();
-
-    this.recipesCollection.push(recipe);
-    return recipe;
+  ): Promise<Recipe> {
+    return this.recipeService.create(newRecipeData);
   }
 }

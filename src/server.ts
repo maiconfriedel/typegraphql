@@ -1,11 +1,12 @@
 import "reflect-metadata";
 import { buildSchema } from "type-graphql";
-import { RecipeResolver } from "./resolvers/RecipeResolver";
 import { ApolloServer } from "apollo-server";
+import { Container } from "typedi";
 
 async function bootstrap() {
   const schema = await buildSchema({
-    resolvers: [RecipeResolver],
+    resolvers: [__dirname + "/resolvers/**/*.{ts,js}"],
+    container: Container,
   });
 
   // Create the GraphQL server
